@@ -1,19 +1,20 @@
-#include "DirectoryIndexer.h"
-#include <iostream>
-#include <locale>
-#include <codecvt>
-#include <chrono>
-#include <exception>
+#include "DirectoryIndexer.h"// Include the header file containing the DirectoryIndexer class, assuming it's in the same directory as this source file
+#include <iostream> // Standard input/output stream library
+#include <locale> // Localization utilities library
+#include <codecvt> // Unicode conversion library
+#include <chrono> // Time utilities library
+#include <exception> // Standard exception handling library
 
-// Derived class implementing btree-search method for directory indexing
+// Derived class implementing the B-tree search method for directory indexing
 template <typename K, typename V>
 class BtreeSearchIndexer : public DirectoryIndexer<K, V>
 {
 public:
+    // Method to index a directory recursively
     void IndexDirectory(const std::wstring &directory, int &fileCount, int &subdirectoryCount, std::unordered_map<K, V> &fileIndex) override
     {
-        WIN32_FIND_DATA findFileData;
-        HANDLE hFind;
+        WIN32_FIND_DATA findFileData; // Structure to hold information about the found file
+        HANDLE hFind; // Handle to the file search
 
         try
         {
@@ -26,7 +27,7 @@ public:
             // Check if the search was successful
             if (INVALID_HANDLE_VALUE == hFind)
             {
-                throw DirectoryIndexingException("Error in Finding File");
+                throw DirectoryIndexingException("Error in Finding File"); // Throw an exception if the search fails
             }
 
             // If the search was successful, continue searching until no more files or directories are found
@@ -35,8 +36,7 @@ public:
                 do
                 {
                     // Ignore "." and ".." directories
-                    if (wcscmp(findFileData.cFileName, L".") == 0 ||
-                        wcscmp(findFileData.cFileName, L"..") == 0)
+                    if (wcscmp(findFileData.cFileName, L".") == 0 || wcscmp(findFileData.cFileName, L"..") == 0)
                     {
                         continue;
                     }
@@ -72,43 +72,44 @@ public:
                 // Check for errors in the search process
                 if (GetLastError() != ERROR_NO_MORE_FILES)
                 {
-                    throw DirectoryIndexingException("Error in Finding Next File");
+                    throw DirectoryIndexingException("Error in Finding Next File"); // Throw an exception if an error occurs while finding the next file
                 }
 
                 // Close the handle to the file search
                 FindClose(hFind);
             }
         }
-        catch (const DirectoryIndexingException &e)
+        catch (const DirectoryIndexingException &e) // Catch exceptions specific to directory indexing
         {
             if (hFind != INVALID_HANDLE_VALUE)
             {
                 FindClose(hFind);
             }
-            std::cerr << "Directory indexing error: " << e.what() << std::endl;
-            throw;
+            std::cerr << "Directory indexing error: " << e.what() << std::endl; // Print error message
+            throw; // Re-throw the exception
         }
-        catch (const std::exception &e)
+        catch (const std::exception &e) // Catch general exceptions
         {
             if (hFind != INVALID_HANDLE_VALUE)
             {
                 FindClose(hFind);
             }
-            std::cerr << "General error: " << e.what() << std::endl;
-            throw;
+            std::cerr << "General error: " << e.what() << std::endl; // Print error message
+            throw; // Re-throw the exception
         }
-        catch (...)
+        catch (...) // Catch any other unhandled exceptions
         {
             if (hFind != INVALID_HANDLE_VALUE)
             {
                 FindClose(hFind);
             }
-            std::cerr << "Unknown error occurred during directory indexing" << std::endl;
-            throw;
+            std::cerr << "Unknown error occurred during directory indexing" << std::endl; // Print error message
+            throw; // Re-throw the exception
         }
     }
 };
 
 // Explicit instantiation of the template classes
-template class BtreeSearchIndexer<std::string, std::wstring>;
+template class BtreeSearchIndexer<std::string, std::wstring>; // Instantiate the BtreeSearchIndexer class for specific key and value types
+
 
