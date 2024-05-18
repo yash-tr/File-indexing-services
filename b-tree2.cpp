@@ -1,5 +1,9 @@
 #include "DirectoryIndexer.h"
 #include <iostream>
+#include <locale>
+#include <codecvt>
+#include <chrono>
+#include <exception>
 
 // Derived class implementing btree-search method for directory indexing
 template <typename K, typename V>
