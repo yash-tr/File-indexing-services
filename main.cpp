@@ -7,9 +7,10 @@
 #include <vector>        // Provides vector container
 #include <Windows.h>     // Provides Windows-specific functions and data types
 #include "binarysearchtree.h"
+#include "DirectoryIndexer.h"
 
 // Include the source files for the B-Tree, hashing, and search algorithms
-#include "C:\\Users\\msi Katana\\source\\repos\\OS_P\\b-tree.cpp"
+//#include "C:\\Users\\msi Katana\\source\\repos\\OS_P\\b-tree.cpp"
 #include "C:\\Users\\msi Katana\\source\\repos\\OS_P\\hashing.cpp"
 #include "C:\\Users\\msi Katana\\source\\repos\\OS_P\\search.cpp"
 //#include "C:\\Users\\msi Katana\\source\\repos\\OS_P\\binarysearchtree.cpp"
