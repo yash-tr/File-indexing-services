@@ -5,7 +5,7 @@
 #include <Windows.h>
 #include <iostream>
 #include <string>
-#include <unordered_map>
+#include <stx/btree_map>
 #include <locale>
 #include <codecvt>
 #include <chrono>
@@ -14,15 +14,35 @@
 #include <mutex>
 #include <vector>
 
-using namespace std;
-
 // Exception class for directory indexing errors
 class DirectoryIndexingException : public std::exception
 {
 public:
-    DirectoryIndexingException(const string& message);
+    DirectoryIndexingException(const std::string& message);
 
     const char* what() const noexcept override;
+
+private:
+    std::string msg;
+};
+
+// Abstract base class for directory indexing using templates
+template <typename K, typename V>
+class DirectoryIndexer
+{
+public:
+    virtual void IndexDirectory(const std::wstring& directory, int& fileCount, int& subdirectoryCount, stx::btree_map<K, V>& fileIndex) = 0;
+};
+
+// Derived class implementing B-tree method for directory indexing
+template <typename K, typename V>
+class BtreeSearchIndexer : public DirectoryIndexer<K, V>
+{
+public:
+    void IndexDirectory(const std::wstring& directory, int& fileCount, int& subdirectoryCount, stx::btree_map<K, V>& fileIndex) override;
+};
+
+#endif // DIRECTORYINDEXER_H
 
 private:
     string msg;
@@ -33,7 +53,7 @@ template <typename K, typename V>
 class DirectoryIndexer
 {
 public:
-    virtual void IndexDirectory(const wstring& directory, int& fileCount, int& subdirectoryCount, unordered_map<K, V>& fileIndex) = 0;
+    virtual void IndexDirectory(const wstring& directory, int& fileCount, int& subdirectoryCount, stx::btree_map<K, V>& fileIndex) = 0;
 };
 
 // Mutex to synchronize access to shared data structures
@@ -44,9 +64,8 @@ template <typename K, typename V>
 class BtreeSearchIndexer : public DirectoryIndexer<K, V>
 {
 public:
-    void IndexDirectory(const wstring& directory, int& fileCount, int& subdirectoryCount, unordered_map<K, V>& fileIndex) override;
+    void IndexDirectory(const wstring& directory, int& fileCount, int& subdirectoryCount, stx::btree_map<K, V>& fileIndex) override;
 };
 
-#include "DirectoryIndexer.tpp"
 
 #endif // DIRECTORYINDEXER_H
